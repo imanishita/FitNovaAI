@@ -31,7 +31,7 @@ The UI is React-based and integrates with all services for a seamless experience
 
 _A visual diagram explaining service interactions and request flow will be placed here._
 
-![Flow Diagram](./Screenshots/flowdiagram.jpg)
+![Flow Diagram](./Screenshots/flowchart.jpg)
 
 
 
