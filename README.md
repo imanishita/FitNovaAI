@@ -31,7 +31,7 @@ The UI is React-based and integrates with all services for a seamless experience
 
 _A visual diagram explaining service interactions and request flow will be placed here._
 
-![Flow Diagram](./Screenshots/flowdiagram.png)
+![Flow Diagram](./Screenshots/flowdiagram.jpg)
 
 
 
@@ -41,7 +41,7 @@ _A visual diagram explaining service interactions and request flow will be place
 
 ![Homepage](./Screenshots/homepage.png)
 ![Google SignIn](./Screenshots/signinpage.png)
-![ActivityPage](./Screenshots/activitypage.png)
+![ActivityPage](./Screenshots/activitypage.PNG)
 ---
 
 ## Current Status
