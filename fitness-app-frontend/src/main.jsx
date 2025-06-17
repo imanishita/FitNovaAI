@@ -1,20 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+import App from './App';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
-import { Provider } from 'react-redux'
-import { store } from './store/store'
+import './firebase'; // just to make sure it's initialized
 
-import App from './App'
-import { AuthProvider } from 'react-oauth2-code-pkce'
-import { authConfig } from './authConfig'
+AOS.init();
+console.log("👀 React App is rendering...");
 
-// As of React 18
-const root = ReactDOM.createRoot(document.getElementById('root'))
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <AuthProvider authConfig={authConfig}
-                loadingComponent={<div>Loading...</div>}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </AuthProvider>,
-)
+  <Provider store={store}>
+    <App />
+  </Provider>
+);

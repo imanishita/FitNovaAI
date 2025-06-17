@@ -1,79 +1,119 @@
-import { Box, Button, Typography } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "react-oauth2-code-pkce";
-import { useDispatch } from "react-redux";
-import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from "react-router";
-import { setCredentials } from "./store/authSlice";
+import { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
+import { auth, provider } from "./firebase";
+import { signInWithPopup, signOut } from "firebase/auth";
+
 import ActivityForm from "./components/ActivityForm";
 import ActivityList from "./components/ActivityList";
 import ActivityDetail from "./components/ActivityDetail";
+import Lottie from "lottie-react";
+import animationData from "./assets/fitness.json";
+import { Typewriter } from "react-simple-typewriter";
+import { FcGoogle } from "react-icons/fc";
+// import googleLogo from "./assets/googlelogo.webp"; // still commented out
 
-const ActvitiesPage = () => {
-  return (<Box sx={{ p: 2, border: '1px dashed grey' }}>
-    <ActivityForm onActivitiesAdded = {() => window.location.reload()} />
+const ActivitiesPage = () => (
+  <div className="p-4">
+    <ActivityForm onActivitiesAdded={() => window.location.reload()} />
     <ActivityList />
-  </Box>);
-}
+  </div>
+);
 
 function App() {
-  const { token, tokenData, logIn, logOut, isAuthenticated } = useContext(AuthContext);
-  const dispatch = useDispatch();
-  const [authReady, setAuthReady] = useState(false);
-  
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
-    if (token) {
-      dispatch(setCredentials({token, user: tokenData}));
-      setAuthReady(true);
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Google sign-in error:", error);
     }
-  }, [token, tokenData, dispatch]);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <Router>
-      {!token ? (
-      <Box
-      sx={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-      }}
-    >
-      <Typography variant="h4" gutterBottom>
-        Welcome to FitNova AI
-      </Typography>
-      <Typography variant="subtitle1" sx={{ mb: 3 }}>
-        Please login to access your activities
-      </Typography>
-      <Button variant="contained" color="primary" size="large" onClick={() => {
-                logIn();
-              }}>
-        LOGIN
-      </Button>
-    </Box>
-            ) : (
-              // <div>
-              //   <pre>{JSON.stringify(tokenData, null, 2)}</pre>
-              //   <pre>{JSON.stringify(token, null, 2)}</pre>
-              // </div>
+      {!user ? (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-teal-600 px-4">
+          <div className="flex flex-col md:flex-row items-center gap-8 bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl text-white max-w-5xl w-full">
+            {/* Left animation */}
+            <div className="flex-1 hidden md:block">
+              <Lottie animationData={animationData} className="w-full max-w-sm" />
+            </div>
 
-             
+            {/* Right login section */}
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-4xl font-bold mb-4">
+                <Typewriter
+                  words={["FitNova AI", "Track. Improve. Repeat.", "Get Fit with AI!"]}
+                  loop={true}
+                  cursor
+                  cursorStyle="|"
+                  typeSpeed={70}
+                  deleteSpeed={50}
+                  delaySpeed={1500}
+                />
+              </h1>
+              <p className="mb-6 text-sm">Please login to access your activities</p>
 
-              <Box sx={{ p: 2, border: '1px dashed grey' }}>
-                 <Button variant="contained" color="secondary" onClick={logOut}>
-                  Logout
-                </Button>
-              <Routes>
-                <Route path="/activities" element={<ActvitiesPage />}/>
-                <Route path="/activities/:id" element={<ActivityDetail />}/>
+              {/* Clean, static Google login button */}
+              <button
+                onClick={handleLogin}
+                className="bg-white text-black font-medium py-2 px-5 rounded-full shadow-sm flex items-center gap-2"
+              >
+                <FcGoogle className="text-xl" />
+                 Sign in with Google
+              </button>
 
-                <Route path="/" element={token ? <Navigate to="/activities" replace/> : <div>Welcome! Please Login.</div>} />
-              </Routes>
-            </Box>
-            )}
+              {/* 
+              Uncomment to show custom image instead
+              <img
+                src={googleLogo}
+                alt="Google"
+                className="w-5 h-5 object-contain mt-4"
+              />
+              */}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="p-4 min-h-screen bg-gray-100">
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded transition duration-300"
+            >
+              Logout
+            </button>
+          </div>
+          <Routes>
+            <Route path="/activities" element={<ActivitiesPage />} />
+            <Route path="/activities/:id" element={<ActivityDetail />} />
+            <Route path="/" element={<Navigate to="/activities" replace />} />
+          </Routes>
+        </div>
+      )}
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
