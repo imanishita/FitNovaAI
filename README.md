@@ -1,9 +1,9 @@
 # FitNovaAI(Microservices Project)
 
-**FitNova** is a full-stack microservices-based fitness application that helps users track their physical activities, leverage AI-generated recommendations, and manage user goals and history efficiently.
-
----
 _Note : > ⚠️ This project is currently in active development. Some environment-specific configuration values are still hardcoded temporarily and will be migrated to `.env` soon._
+---
+
+**FitNova** is a full-stack microservices-based fitness application that helps users track their physical activities, leverage AI-generated recommendations, and manage user goals and history efficiently.
 
 ---
 
