@@ -51,9 +51,10 @@ _A visual diagram explaining service interactions and request flow will be place
 
 - [x] User Registration and Login (Firebase)
 - [x] Basic Activity Tracker
-- [ ] Gemini API integration (in progress)
-- [ ] Backend service communication (in progress)
-- [ ] Gateway & RabbitMQ setup (in progress)
+- [x] Gemini API integration 
+- [x] Backend service communication 
+- [ ] Gateway setup (in progress)
+- [ ] UI enhancements (in progress)
 
 ---
 
