@@ -1,9 +1,14 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signOut 
+} from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
-// Your Firebase configuration
+
 const firebaseConfig = {
   apiKey: "AIzaSyCrbW8EpbRYYzfz8R3YbDNydXiP8TBGzyU",
   authDomain: "fitnovaai-afa88.firebaseapp.com",
@@ -14,13 +19,20 @@ const firebaseConfig = {
   measurementId: "G-C807LR217Y",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
-// ✅ Initialize auth and provider
+const app = initializeApp(firebaseConfig);
+
+
+const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// ✅ Export all necessary parts
-export { app, analytics, auth, provider, signInWithPopup, signOut };
+
+export {
+  app,
+  analytics,
+  auth,
+  provider,
+  signInWithPopup,
+  signOut,
+};
