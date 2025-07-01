@@ -1,20 +1,15 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+// src/main.jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+import { ThemeProvider } from "./components/ThemeContext"; 
 
-import { Provider } from 'react-redux'
-import { store } from './store/store'
 
-import App from './App'
-import { AuthProvider } from 'react-oauth2-code-pkce'
-import { authConfig } from './authConfig'
-
-// As of React 18
-const root = ReactDOM.createRoot(document.getElementById('root'))
-root.render(
-  <AuthProvider authConfig={authConfig}
-                loadingComponent={<div>Loading...</div>}>
-    <Provider store={store}>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <ThemeProvider>
       <App />
-    </Provider>
-  </AuthProvider>,
-)
+    </ThemeProvider>
+  </React.StrictMode>
+);
