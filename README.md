@@ -1,69 +1,121 @@
-# FitNovaAI(Microservices Project)
+> ⚠️ **Active development** — some env config values are temporarily hardcoded and will be migrated to `.env` soon.
 
-_Note : ⚠️ This project is currently in active development. Some environment-specific configuration values are still hardcoded temporarily and will be migrated to `.env` soon._
----
+<div align="center">
 
-**FitNova** is a full-stack microservices-based fitness application that helps users track their physical activities, leverage AI-generated recommendations, and manage user goals and history efficiently.
+# 🏋️ FitNovaAI
 
----
+**A full-stack microservices fitness platform for tracking activities, setting goals,**
+**and leveraging AI-powered recommendations — built for scale.**
 
-## Project Overview
+<br/>
 
-This project is built using the **Microservices Architecture**, separating core functionalities into three services:
-- **User Service** – Handles user authentication and profiles
-- **Activity Service** – Tracks daily fitness activities
-- **AI Service** – Provides intelligent suggestions using AI (Gemini API integration planned)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini_API-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-The UI is React-based and integrates with all services for a seamless experience.
-
----
-
-
-
-## Tech Stack
-
-- **Frontend**: React, Tailwind CSS
-- **Backend**: Spring Boot (REST APIs), Firebase(Authetication)
-- **Database**: MySQL, MongoDB
-- **AI**: Gemini API (planned)
-- **Architecture**: Microservices with Eureka Server and RabbitMQ for inter-service communication
+</div>
 
 ---
 
-## System Flow Diagram
+## 🧩 Core Services
 
-_A visual diagram explaining service interactions and request flow will be placed here._
-
-![Flow Diagram](./Screenshots/flowchart.jpg)
-
-
+| | Service | Description |
+|---|---|---|
+| 👤 | **User Service** | Handles authentication, registration, and profile management via Firebase |
+| 🏃 | **Activity Service** | Records and tracks daily fitness activities, history, and user goals |
+| 🤖 | **AI Service** | Delivers intelligent fitness suggestions powered by Gemini API integration |
 
 ---
 
-## UI Preview
+## 🏗️ Architecture
 
-![Homepage](./Screenshots/homepage.png)
-![Google SignIn](./Screenshots/signinpage.png)
-![ActivityPage](./Screenshots/activitypage.PNG)
+```
+React UI  ──►  API Gateway  ──►  Eureka Server (Service Discovery)
+               (in progress)             │
+                              ┌──────────┼──────────┐
+                              ▼          ▼           ▼
+                        User Service  Activity    AI Service
+                                      Service
+                              └──────────┼──────────┘
+                                         ▼
+                                     RabbitMQ
+                                  (Inter-service messaging)
+                                         │
+                               ┌─────────┴─────────┐
+                               ▼                   ▼
+                             MySQL              MongoDB
+```
+
 ---
 
-## Current Status
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Frontend** | React · Tailwind CSS |
+| **Backend** | Spring Boot · REST APIs |
+| **Auth** | Firebase Authentication |
+| **Database** | MySQL · MongoDB |
+| **AI** | Gemini API *(planned)* |
+| **Messaging & Discovery** | RabbitMQ · Eureka Server |
+
+---
+
+## ✅ Progress
 
 - [x] User Registration and Login (Firebase)
 - [x] Basic Activity Tracker
-- [x] Gemini API integration 
-- [x] Backend service communication 
-- [ ] Gateway setup (in progress)
-- [ ] UI enhancements (in progress)
+- [x] Gemini API Integration
+- [x] Backend service communication
+- [ ] API Gateway setup *(in progress)*
+- [ ] UI enhancements *(in progress)*
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
-Each service can be run individually:
+Each service can be run independently:
 
 ```bash
-# Example: Running user-service
+# User Service
 cd user-service
 ./mvnw spring-boot:run
+```
 
+```bash
+# Activity Service
+cd activity-service
+./mvnw spring-boot:run
+```
+
+```bash
+# AI Service
+cd ai-service
+./mvnw spring-boot:run
+```
+
+> 💡 Make sure **Eureka Server** is running first so all services can register with the discovery server.
+
+---
+
+## 📁 Project Structure
+
+```
+fitnova-ai/
+├── user-service/        # Auth & profile management
+├── activity-service/    # Fitness tracking & goals
+├── ai-service/          # Gemini AI recommendations
+├── eureka-server/       # Service discovery
+└── frontend/            # React + Tailwind UI
+```
+
+---
+
+<div align="center">
+  <sub>Built with ☕ and Spring Boot · FitNovaAI</sub>
+</div>
