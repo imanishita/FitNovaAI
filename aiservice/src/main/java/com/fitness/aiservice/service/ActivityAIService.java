@@ -150,16 +150,12 @@ public class ActivityAIService {
             "caloriesBurned": "Calories analysis here"
           },
           "improvements": [
-            {
-              "area": "Area name",
-              "recommendation": "Detailed recommendation"
-            }
+            "Detailed improvement 1",
+            "Detailed improvement 2"
           ],
           "suggestions": [
-            {
-              "workout": "Workout name",
-              "description": "Detailed workout description"
-            }
+            "Detailed suggestion 1",
+            "Detailed suggestion 2"
           ],
           "safety": [
             "Safety point 1",

@@ -1,2 +1,15 @@
 # Added by code-review-graph
 .code-review-graph/
+#Environment Variables
+.env
+.env.*
+
+#Node
+node_modules
+
+#Build
+dist/
+build/
+
+#Logs
+*.log

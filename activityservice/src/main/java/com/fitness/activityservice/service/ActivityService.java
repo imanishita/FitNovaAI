@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import com.fitness.activityservice.dto.RecommendationDTO;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final UserValidationService userValidationService;
     private final RabbitTemplate rabbitTemplate;
+    private final WebClient aiServiceWebClient;
 
     @Value("${rabbitmq.exchange.name}")
     private String exchange;
@@ -67,6 +71,25 @@ public class ActivityService {
         response.setAdditionalMetrics(activity.getAdditionalMetrics());
         response.setCreatedAt(activity.getCreatedAt());
         response.setUpdatedAt(activity.getUpdatedAt());
+
+        // Fetch AI Recommendation synchronously
+        try {
+            RecommendationDTO recommendation = aiServiceWebClient.get()
+                    .uri("/api/recommendations/activity/{activityId}", activity.getId())
+                    .retrieve()
+                    .bodyToMono(RecommendationDTO.class)
+                    .block();
+            
+            if (recommendation != null) {
+                response.setRecommendation(recommendation.getRecommendation());
+                response.setImprovements(recommendation.getImprovements());
+                response.setSuggestions(recommendation.getSuggestions());
+                response.setSafety(recommendation.getSafety());
+            }
+        } catch (Exception e) {
+            log.warn("Could not fetch recommendation for activity {}: {}", activity.getId(), e.getMessage());
+        }
+
         return response;
     }
 

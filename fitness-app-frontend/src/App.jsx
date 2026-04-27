@@ -25,7 +25,7 @@ import { registerUser } from "./services/api";
 
 const ActivitiesPage = () => (
   <div className="p-4">
-    <ActivityForm onActivitiesAdded={() => window.location.reload()} />
+    <ActivityForm onActivityAdded={() => window.location.reload()} />
     <ActivityList />
   </div>
 );
