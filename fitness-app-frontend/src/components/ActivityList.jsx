@@ -41,10 +41,10 @@ const ActivityList = () => {
       <div className="max-w-6xl mx-auto p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-3xl p-6 animate-pulse">
-              <div className="h-12 bg-gray-200 rounded-2xl mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div key={i} className="bg-white/70 dark:bg-black/40 backdrop-blur-xl rounded-3xl p-6 animate-pulse border border-white/40 dark:border-white/10">
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-4"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
             </div>
           ))}
         </div>
@@ -56,8 +56,8 @@ const ActivityList = () => {
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Activities</h1>
-        <p className="text-gray-600">Track your progress and achievements</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Your Activities</h1>
+        <p className="text-gray-600 dark:text-gray-300">Track your progress and achievements</p>
       </div>
 
       {/* Activities Grid */}
@@ -68,7 +68,7 @@ const ActivityList = () => {
             <div
               key={activity.id}
               onClick={() => handleActivityClick(activity.id)}
-              className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 border border-gray-100 overflow-hidden"
+              className="bg-white/70 dark:bg-black/40 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 border border-white/40 dark:border-white/10 overflow-hidden"
             >
               {/* Card Header */}
               <div className={`bg-gradient-to-r ${config.color} p-6 text-white relative`}>
@@ -95,24 +95,24 @@ const ActivityList = () => {
                   <div className="text-center">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-500 font-medium">Duration</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Duration</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{activity.duration}</p>
-                    <p className="text-sm text-gray-500">minutes</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{activity.duration}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">minutes</p>
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <Flame className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-500 font-medium">Calories</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Calories</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{activity.caloriesBurned}</p>
-                    <p className="text-sm text-gray-500">burned</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{activity.caloriesBurned}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">burned</p>
                   </div>
                 </div>
 
                 {/* Progress Bar */}
                 <div className="mt-4">
-                  <div className="bg-gray-100 rounded-full h-2">
+                  <div className="bg-gray-100 dark:bg-gray-700 rounded-full h-2">
                     <div 
                       className={`bg-gradient-to-r ${config.color} h-2 rounded-full transition-all duration-1000`}
                       style={{ width: `${Math.min((activity.caloriesBurned / 500) * 100, 100)}%` }}
@@ -129,11 +129,11 @@ const ActivityList = () => {
       {/* Empty State */}
       {activities.length === 0 && !isLoading && (
         <div className="text-center py-16">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <Activity className="w-10 h-10 text-gray-400" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No activities yet</h3>
-          <p className="text-gray-600">Start tracking your fitness journey today!</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No activities yet</h3>
+          <p className="text-gray-600 dark:text-gray-400">Start tracking your fitness journey today!</p>
         </div>
       )}
     </div>

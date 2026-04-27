@@ -1,27 +1,38 @@
-import axios from "axios";
+import axios from 'axios';
 
-const API_URL = 'http://localhost:8888/api';
+// ✅ Gateway runs on port 8080
+const BASE_URL = 'http://localhost:8080/api';
 
-const api = axios.create({
-    baseURL:API_URL
-});
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
 
-api.interceptors.request.use((config) => {
-    const userId = localStorage.getItem('userId');
-    const token = localStorage.getItem('token');
+  return {
+    Authorization: `Bearer ${token}`,
+    'X-User-ID': userId,
+  };
+};
 
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-    }
+export const getActivities = async () => {
+  return axios.get(`${BASE_URL}/activities`, {
+    headers: getAuthHeaders(),
+  });
+};
 
-    if (userId) {
-        config.headers['X-User-ID'] = userId;
-    }
-    return config;
-}
-);
+export const addActivity = async (activity) => {
+  return axios.post(`${BASE_URL}/activities`, activity, {
+    headers: getAuthHeaders(),
+  });
+};
 
+export const getActivityDetail = async (id) => {
+  return axios.get(`${BASE_URL}/activities/${id}`, {
+    headers: getAuthHeaders(),
+  });
+};
 
-export const getActivities = () => api.get('/activities');
-export const addActivity = (activity) => api.post('/activities', activity);
-export const getActivityDetail = (id) => api.get(`/recommendations/activity/${id}`);
+export const registerUser = async (userPayload) => {
+  return axios.post(`${BASE_URL}/users/register`, userPayload, {
+    headers: getAuthHeaders(),
+  });
+};

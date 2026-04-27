@@ -25,20 +25,57 @@ const ActivityForm = ({ onActivityAdded }) => {
     setSuccess('');
     setIsLoading(true);
 
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    console.log("Token:", token);
+    console.log("User ID:", userId);
+
     if (!activity.duration || !activity.caloriesBurned) {
       setError('Please fill in both Duration and Calories Burned.');
       setIsLoading(false);
       return;
     }
 
+    // Validate that duration and caloriesBurned are valid numbers
+    const durationNum = parseInt(activity.duration, 10);
+    const caloriesNum = parseInt(activity.caloriesBurned, 10);
+
+    if (isNaN(durationNum) || durationNum <= 0) {
+      setError('Please enter a valid duration (positive number).');
+      setIsLoading(false);
+      return;
+    }
+
+    if (isNaN(caloriesNum) || caloriesNum <= 0) {
+      setError('Please enter a valid calories burned (positive number).');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!token || !userId) {
+      setError('⚠️ You are not logged in. Please sign in again.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      await addActivity(activity);
+      // Convert string values to integers for backend
+      const activityPayload = {
+        type: activity.type,
+        duration: durationNum,
+        caloriesBurned: caloriesNum,
+        additionalMetrics: activity.additionalMetrics || {},
+      };
+
+      await addActivity(activityPayload); 
       setSuccess('🎉 Activity added successfully!');
       onActivityAdded?.();
       setActivity({ type: 'RUNNING', duration: '', caloriesBurned: '', additionalMetrics: {} });
     } catch (err) {
-      console.error(err);
-      setError('Something went wrong while adding activity.');
+      console.error("❌ Axios Error:", err);
+      const errorMessage = err.response?.data?.message || err.message || 'Something went wrong while adding activity.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +85,7 @@ const ActivityForm = ({ onActivityAdded }) => {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+      <div className="bg-white/70 dark:bg-black/40 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/40 dark:border-white/10">
         {/* Header */}
         <div className={`bg-gradient-to-r ${selectedActivity.color} p-8 text-white relative overflow-hidden`}>
           <div className="absolute inset-0 bg-black/10"></div>
@@ -68,10 +105,10 @@ const ActivityForm = ({ onActivityAdded }) => {
           <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-white/5 rounded-full"></div>
         </div>
 
-        <div className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
           {/* Activity Type Selection */}
           <div className="space-y-3">
-            <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
               Activity Type
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -83,12 +120,12 @@ const ActivityForm = ({ onActivityAdded }) => {
                   className={`p-4 rounded-2xl border-2 transition-all duration-300 group hover:shadow-lg ${
                     activity.type === type.value
                       ? `border-transparent bg-gradient-to-r ${type.color} text-white shadow-lg scale-105`
-                      : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100'
+                      : 'border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-black/50 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                 >
                   <div className="text-2xl mb-2">{type.icon}</div>
                   <div className={`text-sm font-medium ${
-                    activity.type === type.value ? 'text-white' : 'text-gray-700'
+                    activity.type === type.value ? 'text-white' : 'text-gray-700 dark:text-gray-300'
                   }`}>
                     {type.label}
                   </div>
@@ -99,7 +136,7 @@ const ActivityForm = ({ onActivityAdded }) => {
 
           {/* Duration Input */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Duration (Minutes)
             </label>
@@ -108,7 +145,7 @@ const ActivityForm = ({ onActivityAdded }) => {
                 type="number"
                 value={activity.duration}
                 onChange={(e) => setActivity({ ...activity, duration: e.target.value })}
-                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-300 text-lg"
+                className="w-full px-4 py-4 bg-white/50 dark:bg-black/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:text-white transition-all duration-300 text-lg"
                 placeholder="Enter duration in minutes"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -119,7 +156,7 @@ const ActivityForm = ({ onActivityAdded }) => {
 
           {/* Calories Input */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
               <Flame className="w-4 h-4" />
               Calories Burned
             </label>
@@ -128,7 +165,7 @@ const ActivityForm = ({ onActivityAdded }) => {
                 type="number"
                 value={activity.caloriesBurned}
                 onChange={(e) => setActivity({ ...activity, caloriesBurned: e.target.value })}
-                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-300 text-lg"
+                className="w-full px-4 py-4 bg-white/50 dark:bg-black/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:text-white transition-all duration-300 text-lg"
                 placeholder="Enter calories burned"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -139,8 +176,7 @@ const ActivityForm = ({ onActivityAdded }) => {
 
           {/* Submit Button */}
           <button
-            type="button"
-            onClick={handleSubmit}
+            type="submit"
             disabled={isLoading}
             className={`w-full py-4 rounded-2xl font-semibold text-white text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 ${
               isLoading
@@ -173,7 +209,7 @@ const ActivityForm = ({ onActivityAdded }) => {
               <p className="text-green-700 font-medium">✅ {success}</p>
             </div>
           )}
-        </div>
+        </form>
       </div>
     </div>
   );

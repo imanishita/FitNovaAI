@@ -20,7 +20,8 @@ import AnimatedBackground from "./components/Background";
 import { Typewriter } from "react-simple-typewriter";
 import { FcGoogle } from "react-icons/fc";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer"
+import Footer from "./components/Footer";
+import { registerUser } from "./services/api";
 
 const ActivitiesPage = () => (
   <div className="p-4">
@@ -35,15 +36,48 @@ function App() {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       setUser(currentUser);
+
+      if (currentUser) {
+        const idToken = await currentUser.getIdToken();
+        localStorage.setItem("token", idToken);
+        localStorage.setItem("userId", currentUser.uid);
+        
+        try {
+          await registerUser({
+            keycloakId: currentUser.uid,
+            email: currentUser.email,
+            password: "OAUTH_LOGIN",
+            firstName: currentUser.displayName?.split(" ")[0] || "User",
+            lastName: currentUser.displayName?.split(" ")[1] || ""
+          });
+        } catch (err) {
+          console.error("Failed to sync user with backend:", err);
+        }
+      }
     });
     return () => unsubscribe();
   }, []);
 
   const handleLogin = async () => {
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const idToken = await user.getIdToken();
+
+      localStorage.setItem("token", idToken);
+      localStorage.setItem("userId", result.user.uid);
+
+      await registerUser({
+        keycloakId: user.uid,
+        email: user.email,
+        password: "OAUTH_LOGIN",
+        firstName: user.displayName?.split(" ")[0] || "User",
+        lastName: user.displayName?.split(" ")[1] || ""
+      });
+
+      window.location.reload();
     } catch (error) {
       console.error("Google sign-in error:", error);
     }
@@ -51,7 +85,26 @@ function App() {
 
   const handleEmailLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+
+      localStorage.setItem("token", idToken);
+      localStorage.setItem("userId", userCredential.user.uid);
+
+      await registerUser({
+        keycloakId: user.uid,
+        email: user.email,
+        password: password,
+        firstName: "User",
+        lastName: ""
+      });
+
+      window.location.reload();
     } catch (error) {
       alert("Login failed: " + error.message);
     }
@@ -59,7 +112,26 @@ function App() {
 
   const handleSignup = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+
+      localStorage.setItem("token", idToken);
+      localStorage.setItem("userId", user.uid);
+
+      await registerUser({
+        keycloakId: user.uid,
+        email: user.email,
+        password: password,
+        firstName: "New",
+        lastName: "User"
+      });
+
+      window.location.reload();
     } catch (error) {
       alert("Signup failed: " + error.message);
     }
@@ -68,6 +140,9 @@ function App() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      window.location.reload();
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -80,17 +155,18 @@ function App() {
       <div className="relative z-10 min-h-screen flex flex-col">
         <Navbar />
 
-        {/* Main content area - this will grow to fill space */}
         <main className="flex-1">
           {!user ? (
             <div className="min-h-full flex items-center justify-center px-4 py-10">
               <div className="flex flex-col md:flex-row gap-12 items-center w-full max-w-6xl bg-white/10 dark:bg-white/5 backdrop-blur-md rounded-3xl p-10 shadow-2xl">
-                
-                {/* Left: Typewriter Text */}
                 <div className="w-full md:w-1/2 text-center md:text-left">
                   <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white">
                     <Typewriter
-                      words={["FitNova AI", "Track. Improve. Repeat.", "Get Fit with AI!"]}
+                      words={[
+                        "FitNova AI",
+                        "Track. Improve. Repeat.",
+                        "Get Fit with AI!",
+                      ]}
                       loop
                       cursor
                       cursorStyle="|"
@@ -100,121 +176,160 @@ function App() {
                     />
                   </h1>
                   <p className="text-xl opacity-80 text-gray-700 dark:text-gray-300 leading-relaxed">
-                    Your personal AI fitness tracker that adapts to your goals and helps you achieve lasting results.
+                    Your personal AI fitness tracker that adapts to your goals
+                    and helps you achieve lasting results.
                   </p>
                 </div>
 
-                {/* Right: Login / Signup Form */}
-                <div style={{ width: '100%', maxWidth: '400px' }}>
-                  <div style={{ margin: '0 auto', width: '100%', maxWidth: '384px' }}>
-                    <h2 style={{ 
-                      marginTop: '40px', 
-                      textAlign: 'center', 
-                      fontSize: '24px', 
-                      fontWeight: 'bold', 
-                      color: '#111827',
-                      marginBottom: '40px'
-                    }}>
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+                  <div
+                    style={{
+                      margin: "0 auto",
+                      width: "100%",
+                      maxWidth: "384px",
+                    }}
+                  >
+                    <h2
+                      style={{
+                        marginTop: "40px",
+                        textAlign: "center",
+                        fontSize: "24px",
+                        fontWeight: "bold",
+                        color: "#111827",
+                        marginBottom: "40px",
+                      }}
+                    >
                       Sign in to your account
                     </h2>
                   </div>
-                  
-                  <div style={{ marginTop: '40px', margin: '0 auto', width: '100%', maxWidth: '384px' }}>
-                    <form style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                  <div
+                    style={{
+                      marginTop: "40px",
+                      margin: "0 auto",
+                      width: "100%",
+                      maxWidth: "384px",
+                    }}
+                  >
+                    <form
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "24px",
+                      }}
+                    >
                       <div>
-                        <label htmlFor="email" style={{ 
-                          display: 'block', 
-                          fontSize: '14px', 
-                          fontWeight: '500', 
-                          color: '#111827',
-                          marginBottom: '8px'
-                        }}>
+                        <label
+                          htmlFor="email"
+                          style={{
+                            display: "block",
+                            fontSize: "14px",
+                            fontWeight: "500",
+                            color: "#111827",
+                            marginBottom: "8px",
+                          }}
+                        >
                           Email address
                         </label>
                         <div>
-                          <input 
-                            type="email" 
-                            name="email" 
-                            id="email" 
-                            autoComplete="email" 
-                            required 
+                          <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            autoComplete="email"
+                            required
                             style={{
-                              display: 'block',
-                              width: '100%',
-                              borderRadius: '6px',
-                              backgroundColor: '#ffffff',
-                              padding: '6px 12px',
-                              fontSize: '16px',
-                              color: '#111827',
-                              border: '1px solid #d1d5db',
-                              outline: 'none',
-                              boxSizing: 'border-box'
+                              display: "block",
+                              width: "100%",
+                              borderRadius: "6px",
+                              backgroundColor: "#ffffff",
+                              padding: "6px 12px",
+                              fontSize: "16px",
+                              color: "#111827",
+                              border: "1px solid #d1d5db",
+                              outline: "none",
+                              boxSizing: "border-box",
                             }}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            onFocus={(e) => e.target.style.borderColor = '#4f46e5'}
-                            onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                            onFocus={(e) =>
+                              (e.target.style.borderColor = "#4f46e5")
+                            }
+                            onBlur={(e) =>
+                              (e.target.style.borderColor = "#d1d5db")
+                            }
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label htmlFor="password" style={{ 
-                          display: 'block', 
-                          fontSize: '14px', 
-                          fontWeight: '500', 
-                          color: '#111827',
-                          marginBottom: '8px'
-                        }}>
+                        <label
+                          htmlFor="password"
+                          style={{
+                            display: "block",
+                            fontSize: "14px",
+                            fontWeight: "500",
+                            color: "#111827",
+                            marginBottom: "8px",
+                          }}
+                        >
                           Password
                         </label>
                         <div>
-                          <input 
-                            type="password" 
-                            name="password" 
-                            id="password" 
-                            autoComplete="current-password" 
-                            required 
+                          <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            autoComplete="current-password"
+                            required
                             style={{
-                              display: 'block',
-                              width: '100%',
-                              borderRadius: '6px',
-                              backgroundColor: '#ffffff',
-                              padding: '6px 12px',
-                              fontSize: '16px',
-                              color: '#111827',
-                              border: '1px solid #d1d5db',
-                              outline: 'none',
-                              boxSizing: 'border-box'
+                              display: "block",
+                              width: "100%",
+                              borderRadius: "6px",
+                              backgroundColor: "#ffffff",
+                              padding: "6px 12px",
+                              fontSize: "16px",
+                              color: "#111827",
+                              border: "1px solid #d1d5db",
+                              outline: "none",
+                              boxSizing: "border-box",
                             }}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            onFocus={(e) => e.target.style.borderColor = '#4f46e5'}
-                            onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                            onFocus={(e) =>
+                              (e.target.style.borderColor = "#4f46e5")
+                            }
+                            onBlur={(e) =>
+                              (e.target.style.borderColor = "#d1d5db")
+                            }
                           />
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '12px' }}>
+                      <div style={{ display: "flex", gap: "12px" }}>
                         <button
                           type="button"
                           onClick={handleEmailLogin}
                           style={{
-                            display: 'flex',
-                            width: '100%',
-                            justifyContent: 'center',
-                            borderRadius: '6px',
-                            backgroundColor: '#4f46e5',
-                            padding: '6px 12px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            color: '#ffffff',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'background-color 0.2s'
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "center",
+                            borderRadius: "6px",
+                            backgroundColor: "#4f46e5",
+                            padding: "6px 12px",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            color: "#ffffff",
+                            border: "none",
+                            cursor: "pointer",
+                            transition: "background-color 0.2s",
                           }}
-                          onMouseOver={(e) => e.target.style.backgroundColor = '#4338ca'}
-                          onMouseOut={(e) => e.target.style.backgroundColor = '#4f46e5'}
+                          onMouseOver={(e) =>
+                            (e.target.style.backgroundColor = "#4338ca")
+                          }
+                          onMouseOut={(e) =>
+                            (e.target.style.backgroundColor = "#4f46e5")
+                          }
                         >
                           Sign in
                         </button>
@@ -222,33 +337,66 @@ function App() {
                           type="button"
                           onClick={handleSignup}
                           style={{
-                            display: 'flex',
-                            width: '100%',
-                            justifyContent: 'center',
-                            borderRadius: '6px',
-                            backgroundColor: '#059669',
-                            padding: '6px 12px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            color: '#ffffff',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'background-color 0.2s'
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "center",
+                            borderRadius: "6px",
+                            backgroundColor: "#059669",
+                            padding: "6px 12px",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            color: "#ffffff",
+                            border: "none",
+                            cursor: "pointer",
+                            transition: "background-color 0.2s",
                           }}
-                          onMouseOver={(e) => e.target.style.backgroundColor = '#047857'}
-                          onMouseOut={(e) => e.target.style.backgroundColor = '#059669'}
+                          onMouseOver={(e) =>
+                            (e.target.style.backgroundColor = "#047857")
+                          }
+                          onMouseOut={(e) =>
+                            (e.target.style.backgroundColor = "#059669")
+                          }
                         >
                           Sign up
                         </button>
                       </div>
                     </form>
 
-                    <div style={{ position: 'relative', margin: '24px 0' }}>
-                      <div style={{ position: 'absolute', inset: '0', display: 'flex', alignItems: 'center' }}>
-                        <div style={{ width: '100%', borderTop: '1px solid #d1d5db' }}></div>
+                    <div
+                      style={{ position: "relative", margin: "24px 0" }}
+                    >
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: "0",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "100%",
+                            borderTop: "1px solid #d1d5db",
+                          }}
+                        ></div>
                       </div>
-                      <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', fontSize: '14px' }}>
-                        <span style={{ padding: '0 8px', backgroundColor: '#ffffff', color: '#6b7280' }}>or continue with</span>
+                      <div
+                        style={{
+                          position: "relative",
+                          display: "flex",
+                          justifyContent: "center",
+                          fontSize: "14px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            padding: "0 8px",
+                            backgroundColor: "#ffffff",
+                            color: "#6b7280",
+                          }}
+                        >
+                          or continue with
+                        </span>
                       </div>
                     </div>
 
@@ -256,25 +404,29 @@ function App() {
                       type="button"
                       onClick={handleLogin}
                       style={{
-                        display: 'flex',
-                        width: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '12px',
-                        borderRadius: '6px',
-                        backgroundColor: '#ffffff',
-                        padding: '6px 12px',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: '#111827',
-                        border: '1px solid #d1d5db',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
+                        display: "flex",
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: "12px",
+                        borderRadius: "6px",
+                        backgroundColor: "#ffffff",
+                        padding: "6px 12px",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        color: "#111827",
+                        border: "1px solid #d1d5db",
+                        cursor: "pointer",
+                        transition: "background-color 0.2s",
                       }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = '#ffffff'}
+                      onMouseOver={(e) =>
+                        (e.target.style.backgroundColor = "#f9fafb")
+                      }
+                      onMouseOut={(e) =>
+                        (e.target.style.backgroundColor = "#ffffff")
+                      }
                     >
-                      <FcGoogle style={{ fontSize: '20px' }} />
+                      <FcGoogle style={{ fontSize: "20px" }} />
                       Sign in with Google
                     </button>
                   </div>
@@ -282,7 +434,7 @@ function App() {
               </div>
             </div>
           ) : (
-            <div className="p-4 min-h-full bg-gray-100 dark:bg-[#0a0a0a] text-black dark:text-white">
+            <div className="p-4 min-h-full text-black dark:text-white">
               <div className="flex justify-end mb-4">
                 <button
                   onClick={handleLogout}
@@ -300,7 +452,6 @@ function App() {
           )}
         </main>
 
-        {/* Footer - appears on all pages */}
         <Footer />
       </div>
     </Router>
