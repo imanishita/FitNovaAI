@@ -22,9 +22,14 @@ public class ActivityAIService {
 
     public Recommendation generateRecommendation(Activity activity) {
         String prompt = createPromptForActivity(activity);
-        String aiResponse = geminiService.getAnswer(prompt);
-        log.info("RESPONSE FROM AI: {} ", aiResponse);
-        return processAiResponse(activity, aiResponse);
+        try {
+            String aiResponse = geminiService.getAnswer(prompt);
+            log.info("RESPONSE FROM AI: {} ", aiResponse);
+            return processAiResponse(activity, aiResponse);
+        } catch (Exception e) {
+            log.error("Error calling Gemini API for activity {}: {}", activity.getId(), e.getMessage());
+            return createDefaultRecommendation(activity);
+        }
     }
 
     private Recommendation processAiResponse(Activity activity, String aiResponse) {

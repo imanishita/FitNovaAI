@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Clock, Flame, ChevronRight, Activity } from 'lucide-react';
 import { getActivities } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const ActivityList = () => {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const activityConfig = {
     RUNNING: { icon: '🏃‍♂️', color: 'from-red-500 to-pink-500', bgColor: 'bg-red-50', textColor: 'text-red-700' },
@@ -28,12 +30,9 @@ const ActivityList = () => {
     fetchActivities();
   }, []);
 
-  // Function to handle activity click - you can customize this
+  // Function to handle activity click
   const handleActivityClick = (activityId) => {
-    // Navigate to activity detail page
-    // You can use react-router's useNavigate hook here
-    console.log('Navigate to activity:', activityId);
-    // Example: navigate(`/activities/${activityId}`);
+    navigate(`/activities/${activityId}`);
   };
 
   if (isLoading) {
