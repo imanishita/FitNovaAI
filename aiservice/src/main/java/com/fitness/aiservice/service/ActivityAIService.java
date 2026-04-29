@@ -82,18 +82,48 @@ public class ActivityAIService {
     }
 
     private Recommendation createDefaultRecommendation(Activity activity) {
+        String activityType = activity.getType() != null ? activity.getType().toUpperCase() : "UNKNOWN";
+        
+        String mockRecommendation;
+        List<String> mockImprovements;
+        List<String> mockSuggestions;
+        List<String> mockSafety;
+
+        switch (activityType) {
+            case "RUNNING":
+                mockRecommendation = String.format("Great running session! You burned %d calories in %d minutes. Your pace seems steady. Running regularly improves cardiovascular health.", activity.getCaloriesBurned(), activity.getDuration());
+                mockImprovements = Arrays.asList("Try incorporating interval training to improve your pace.", "Focus on your breathing rhythm.");
+                mockSuggestions = Arrays.asList("Recovery Walk: 20 mins to ease muscles", "Core Workout: Strengthen your core to improve running posture");
+                mockSafety = Arrays.asList("Wear proper running shoes to prevent joint stress.", "Always warm up with dynamic stretches.", "Stay hydrated before and after your run.");
+                break;
+            case "CYCLING":
+                mockRecommendation = String.format("Solid cycling workout! Burning %d calories in %d minutes shows good endurance. Cycling is excellent for leg strength and stamina.", activity.getCaloriesBurned(), activity.getDuration());
+                mockImprovements = Arrays.asList("Try adjusting your gear ratios to maintain a consistent cadence.", "Include some hill climbs to build leg power.");
+                mockSuggestions = Arrays.asList("Light Yoga: 15 mins focusing on hip flexors and lower back", "Upper Body Strength: To balance your fitness profile");
+                mockSafety = Arrays.asList("Always wear a properly fitted helmet.", "Check tire pressure and brakes before riding.", "Ensure your bike seat is at the correct height.");
+                break;
+            case "WALKING":
+                mockRecommendation = String.format("Nice walking session! You burned %d calories over %d minutes. Walking is a fantastic low-impact way to stay active.", activity.getCaloriesBurned(), activity.getDuration());
+                mockImprovements = Arrays.asList("Try increasing your walking pace slightly to elevate your heart rate.", "Incorporate arm movements or light weights.");
+                mockSuggestions = Arrays.asList("Power Walk: Try a 30 min power walk tomorrow", "Stretching Routine: 10 mins focusing on calves and hamstrings");
+                mockSafety = Arrays.asList("Wear comfortable, supportive walking shoes.", "Stay visible if walking early morning or late evening.", "Maintain good posture while walking.");
+                break;
+            default:
+                mockRecommendation = String.format("Good job completing your %s activity! You burned %d calories in %d minutes. Keep up the consistent effort.", activity.getType(), activity.getCaloriesBurned(), activity.getDuration());
+                mockImprovements = Arrays.asList("Gradually increase the duration or intensity of your workouts.", "Focus on maintaining proper form.");
+                mockSuggestions = Arrays.asList("Cross-training: Mix up your routine to prevent plateaus", "Active Recovery: Take a day to do light mobility work");
+                mockSafety = Arrays.asList("Always warm up before exercise.", "Stay hydrated throughout the day.", "Listen to your body and rest when needed.");
+                break;
+        }
+
         return Recommendation.builder()
                 .activityId(activity.getId())
                 .userId(activity.getUserId())
                 .activityType(activity.getType())
-                .recommendation("Unable to generate detailed analysis")
-                .improvements(Collections.singletonList("Continue with your current routine"))
-                .suggestions(Collections.singletonList("Consider consulting a fitness professional"))
-                .safety(Arrays.asList(
-                        "Always warm up before exercise",
-                        "Stay hydrated",
-                        "Listen to your body"
-                ))
+                .recommendation("[MOCK AI RESPONSE] " + mockRecommendation)
+                .improvements(mockImprovements)
+                .suggestions(mockSuggestions)
+                .safety(mockSafety)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

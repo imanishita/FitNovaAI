@@ -76,6 +76,7 @@ graph TD
 - **Centralized Security**: API Gateway acts as an OAuth2 Resource Server validating Firebase tokens.
 - **Event-Driven AI Recommendations**: When an activity is tracked, an event is published to RabbitMQ. The AI service consumes this, prompts the Gemini API, and stores personalized recommendations in MongoDB.
 - **Service Discovery**: Automated instance registration and load balancing via Netflix Eureka.
+- **Resilient AI Fallback Mechanism**: Integrated robust error handling to manage Gemini API rate limits (HTTP 429) or unavailability. A rule-based mock response mode automatically provides context-aware fitness suggestions based on the activity type, ensuring the system remains functional and responsive at all times without crashing the message queue.
 
 ---
 
