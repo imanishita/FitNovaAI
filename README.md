@@ -1,8 +1,18 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=30&duration=3000&pause=1100&color=6DB33F&center=true&vCenter=true&width=860&lines=🏋️+FitNovaAI;Microservices+Fitness+Platform;Event-Driven+·+AI-Powered+·+Scalable;Spring+Boot+%2B+React+%2B+Gemini+AI" alt="FitNovaAI" />
+<!-- Animated Header -->
+<a href="https://github.com">
+  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=6DB33F&height=200&section=header&text=🏋️%20FitNovaAI&fontSize=60&fontColor=ffffff&fontAlignY=35&desc=Microservices%20Fitness%20Platform&descAlignY=60&descSize=22&animation=fadeIn" />
+</a>
 
 <br/>
+
+<!-- Animated Typing Banner -->
+<a href="https://git.io/typing-svg">
+  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=24&duration=3000&pause=1100&color=6DB33F&center=true&vCenter=true&multiline=true&repeat=true&width=700&height=60&lines=Event-Driven+%C2%B7+AI-Powered+%C2%B7+Scalable;Spring+Boot+%2B+React+%2B+Gemini+AI" alt="FitNovaAI Typing SVG" />
+</a>
+
+<br/><br/>
 
 **A scalable, full-stack microservices fitness platform empowering users to track activities, set goals, and receive AI-driven personalized recommendations.**
 
@@ -59,26 +69,39 @@ The frontend is built with **React and TailwindCSS**, supporting seamless Dark M
 
 ```mermaid
 graph TD
-    UI[React Frontend (Tailwind + Glassmorphism)] -->|REST / JWT| Gateway(API Gateway :8080)
-    Gateway -->|Service Discovery| Eureka(Eureka Server :8761)
-    
-    Gateway -->|Route| User[User Service :8081]
-    Gateway -->|Route| Activity[Activity Service :8082]
-    Gateway -->|Route| AI[AI Service :8083]
-    
-    Config(Config Server :8888) -.-> User
-    Config -.-> Activity
-    Config -.-> AI
-    Config -.-> Gateway
+    UI["⚛️ React Frontend<br/>(Tailwind + Glassmorphism)"]
+    Gateway["🛡️ API Gateway<br/>:8080"]
+    Eureka["🔍 Eureka Server<br/>:8761"]
+    User["👤 User Service<br/>:8081"]
+    Activity["🏃 Activity Service<br/>:8082"]
+    AI["🤖 AI Service<br/>:8083"]
+    Config["⚙️ Config Server<br/>:8888"]
+    DB1[("🗄️ MySQL")]
+    DB2[("🗄️ MySQL")]
+    DB3[("🍃 MongoDB")]
+    RMQ(["🐇 RabbitMQ"])
+    Gemini["✨ Google Gemini API"]
 
-    User --> DB1[(MySQL)]
-    Activity --> DB2[(MySQL)]
-    AI --> DB3[(MongoDB)]
-    
-    Activity -->|Publishes Events| RMQ((RabbitMQ))
-    RMQ -->|Consumes Events| AI
-    
-    AI -->|Generates Insight| Gemini[Google Gemini API]
+    UI -->|"REST / JWT"| Gateway
+    Gateway -->|"Service Discovery"| Eureka
+
+    Gateway -->|"Route"| User
+    Gateway -->|"Route"| Activity
+    Gateway -->|"Route"| AI
+
+    Config -.->|"Config"| User
+    Config -.->|"Config"| Activity
+    Config -.->|"Config"| AI
+    Config -.->|"Config"| Gateway
+
+    User --> DB1
+    Activity --> DB2
+    AI --> DB3
+
+    Activity -->|"Publishes Events"| RMQ
+    RMQ -->|"Consumes Events"| AI
+
+    AI -->|"Generates Insight"| Gemini
 ```
 
 ---
@@ -181,6 +204,11 @@ npm run dev
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png" width="100%"/>
+
+<!-- Animated Footer Wave -->
+<a href="https://github.com">
+  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=6DB33F&height=120&section=footer&animation=fadeIn" />
+</a>
 
 <img src="https://img.shields.io/badge/Built_with-Spring_Boot_%7C_React_%7C_Gemini_AI-6DB33F?style=for-the-badge&labelColor=0d1117"/>
 
